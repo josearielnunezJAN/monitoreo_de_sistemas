@@ -50,9 +50,10 @@ El objetivo es ofrecer una herramienta ligera de monitoreo con actualización en
 Estructura del Proyecto
 
 monitor-sistema/
-├── server.js              # Servidor backend (API + WebSocket)
-├── index.html             # Interfaz de usuario (frontend)
-├── index.js               # Lógica del cliente (Socket.IO + DOM)
-├── index.css              # Estilos personalizados
-├── icono.png              # Icono institucional
-└── README.md              # Descripción del proyecto
+															
+├── server.JavaScript		| Servidor backend (API + WebSocket)			|
+├── index.html				| Interfaz de usuario (frontend)				|	
+├── index.js				| Lógica del cliente (Socket.IO + DOM)			|
+├── index.css				| Estilos personalizados						|
+├── icono.png				| Icono institucional							|
+└── README.md				| Descripción del proyecto						|
