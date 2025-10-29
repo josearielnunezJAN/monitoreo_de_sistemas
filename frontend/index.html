@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitoreo del Sistema - ITS Cipolletti</title>
+  <link rel="icon" href="icono.png" type="image/png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="index.css">
+</head>
+<body class="bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
+    <div class="container-fluid">
+      <a class="navbar-brand d-flex align-items-center" href="#">
+        <img src="icono.png" alt="Logo" width="40" class="me-2">
+        <span>Monitor de Sistema</span>
+      </a>
+    </div>
+  </nav>
+
+  <main class="container py-4">
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-primary text-white">
+            <i class="fa-solid fa-microchip me-2"></i>CPU
+          </div>
+          <div class="card-body">
+            <p><strong>Fabricante:</strong> <span id="cpuFabricante">-</span></p>
+            <p><strong>Modelo:</strong> <span id="cpuModelo">-</span></p>
+            <p><strong>Núcleos:</strong> <span id="cpuNucleos">-</span></p>
+            <p><strong>Temperatura:</strong> <span id="cpuTemp">-</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-success text-white">
+            <i class="fa-solid fa-memory me-2"></i>Memoria RAM
+          </div>
+          <div class="card-body">
+            <p><strong>Total:</strong> <span id="memTotal">-</span></p>
+            <p><strong>Usado:</strong> <span id="memUsado">-</span></p>
+            <p><strong>Libre:</strong> <span id="memLibre">-</span></p>
+            <div class="progress mt-2">
+              <div id="memProgress" class="progress-bar bg-success" role="progressbar" style="width: 0%">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-6 col-lg-4">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-warning text-dark">
+            <i class="fa-solid fa-hard-drive me-2"></i>Disco (sda1)
+          </div>
+          <div class="card-body">
+            <p><strong>Tamaño:</strong> <span id="discoTotal">-</span></p>
+            <p><strong>Usado:</strong> <span id="discoUsado">-</span></p>
+            <p><strong>Libre:</strong> <span id="discoLibre">-</span></p>
+            <div class="progress mt-2">
+              <div id="discoProgress" class="progress-bar bg-warning" role="progressbar" style="width: 0%">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-info text-white">
+            <i class="fa-solid fa-network-wired me-2"></i>Interfaces de Red
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Interfaz</th>
+                    <th>IP</th>
+                    <th>MAC</th>
+                    <th>Recibido (MB)</th>
+                    <th>Enviado (MB)</th>
+                  </tr>
+                </thead>
+                <tbody id="tablaRed"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-center text-white py-3 bg-dark mt-4">
+    <p class="mb-0">Trabajo Final - Práctica Profesionalizante III<br>Calvo, Javier y Nuñez, Ariel - ITS Cipolletti</p>
+  </footer>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="index.js"></script>
+</body>
+</html>
