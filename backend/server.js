@@ -18,11 +18,10 @@ const proyecto = {
     nombre: 'Monitoreo de Sistemas Node.js',
     descripcion: 'Aplicación para monitorear recursos del sistema en tiempo real',
     integrantes: [
-        { nombre: 'José Ariel', rol: 'Desarrollador' },
-        { nombre: 'Ana Pérez', rol: 'Documentación' },
-        { nombre: 'Luis Gómez', rol: 'Pruebas' }
+        { nombre: 'José Ariel', rol: 'Desarrollador y Documentación' },
+        { nombre: 'Javier Calvo', rol: 'Documentación y Desarrollo' },
     ],
-    version: '1.0.0'
+    version: '2.0.0'
 };
 
 function bytesToGB(bytes) {
@@ -192,4 +191,3 @@ const PORT = 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);
 });
-

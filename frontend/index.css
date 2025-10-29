@@ -1,3 +1,4 @@
+/* Reset y fuentes */
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f8f9fa;
@@ -56,3 +57,19 @@ section {
     padding: 1rem;
   }
 }
+
+/* Login overlay */
+.overlay {
+  position: fixed;
+  top: 0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.5);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.overlay.fade-in { opacity: 1; }
+.overlay.fade-out { opacity: 0; pointer-events: none; }
