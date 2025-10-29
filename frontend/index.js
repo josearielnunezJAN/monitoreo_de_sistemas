@@ -8,6 +8,14 @@ socket.on('disconnect', () => {
   console.log('🔴 Desconectado del servidor');
 });
 
+// Función para cambiar color de barra según porcentaje
+function setProgressColor(bar, percent) {
+  bar.classList.remove('bg-success','bg-warning','bg-danger');
+  if(percent < 60) bar.classList.add('bg-success');
+  else if(percent < 85) bar.classList.add('bg-warning');
+  else bar.classList.add('bg-danger');
+}
+
 // Escucha los datos enviados desde el backend
 socket.on('datosSistema', (datos) => {
   // ===== CPU =====
@@ -15,7 +23,16 @@ socket.on('datosSistema', (datos) => {
   document.getElementById('cpuFabricante').textContent = cpu.fabricante;
   document.getElementById('cpuModelo').textContent = cpu.modelo;
   document.getElementById('cpuNucleos').textContent = cpu.nucleos;
+  document.getElementById('cpuVelocidad').textContent = cpu.velocidadActual;
+  document.getElementById('cpuVelMax').textContent = cpu.velocidadMaxima;
+  document.getElementById('cpuCarga').textContent = cpu.cargaPromedio;
   document.getElementById('cpuTemp').textContent = cpu.temperatura;
+
+  const cpuPercent = parseFloat(cpu.cargaPromedio);
+  const cpuBar = document.getElementById('cpuProgress');
+  cpuBar.style.width = `${cpuPercent}%`;
+  cpuBar.textContent = `${cpuPercent}%`;
+  setProgressColor(cpuBar, cpuPercent);
 
   // ===== MEMORIA =====
   const memoria = datos.memoria;
@@ -23,33 +40,35 @@ socket.on('datosSistema', (datos) => {
   document.getElementById('memUsado').textContent = memoria.usado;
   document.getElementById('memLibre').textContent = memoria.libre;
 
-  // Cálculo visual de porcentaje
   const totalGB = parseFloat(memoria.total);
   const usadoGB = parseFloat(memoria.usado);
   const memPercent = ((usadoGB / totalGB) * 100).toFixed(1);
   const memBar = document.getElementById('memProgress');
   memBar.style.width = `${memPercent}%`;
   memBar.textContent = `${memPercent}%`;
+  setProgressColor(memBar, memPercent);
 
   // ===== DISCOS =====
-  const particiones = datos.particiones;
-  if (particiones.sda1) {
-    const sda1 = particiones.sda1;
-    document.getElementById('discoTotal').textContent = sda1.tamaño;
-    document.getElementById('discoUsado').textContent = sda1.usado;
-    document.getElementById('discoLibre').textContent = sda1.libre;
+  const particiones = datos.disco.particiones;
+  ['sda1', 'sda5'].forEach(key => {
+    const p = particiones[key];
+    if(p){
+      document.getElementById(`${key}Total`).textContent = p.tamaño;
+      document.getElementById(`${key}Usado`).textContent = p.usado;
+      document.getElementById(`${key}Libre`).textContent = p.libre;
 
-    const uso = parseFloat(sda1.usoPorcentaje);
-    const discoBar = document.getElementById('discoProgress');
-    discoBar.style.width = `${uso}%`;
-    discoBar.textContent = `${uso}%`;
-  }
+      const uso = parseFloat(p.usoPorcentaje);
+      const barra = document.getElementById(`${key}Progress`);
+      barra.style.width = `${uso}%`;
+      barra.textContent = `${uso}%`;
+      // Color dinámico solo para CPU y memoria, discos mantiene colores fijos
+    }
+  });
 
-  // ===== INTERFACES DE RED =====
-  const tabla = document.getElementById('tablaRed');
-  tabla.innerHTML = ''; // Limpia contenido previo
-
-  datos.red.forEach((iface) => {
+  // ===== RED =====
+  const tablaRed = document.getElementById('tablaRed');
+  tablaRed.innerHTML = '';
+  datos.red.forEach(iface => {
     const fila = document.createElement('tr');
     fila.innerHTML = `
       <td>${iface.interfaz}</td>
@@ -58,6 +77,34 @@ socket.on('datosSistema', (datos) => {
       <td>${iface.recibidoMB}</td>
       <td>${iface.enviadoMB}</td>
     `;
-    tabla.appendChild(fila);
+    tablaRed.appendChild(fila);
+  });
+
+  // ===== PROCESOS =====
+  const tablaProc = document.getElementById('tablaProcesos');
+  tablaProc.innerHTML = '';
+  datos.procesosActivos.forEach(p => {
+    const fila = document.createElement('tr');
+    fila.innerHTML = `
+      <td>${p.nombre}</td>
+      <td>${p.pid}</td>
+      <td>${p.cpu}</td>
+      <td>${p.memoria}</td>
+      <td>${p.usuario}</td>
+    `;
+    tablaProc.appendChild(fila);
+  });
+
+  // ===== SERVICIOS =====
+  const tablaServ = document.getElementById('tablaServicios');
+  tablaServ.innerHTML = '';
+  datos.servicios.forEach(s => {
+    const fila = document.createElement('tr');
+    fila.innerHTML = `
+      <td>${s.nombre}</td>
+      <td>${s.estado}</td>
+      <td>${s.inicio}</td>
+    `;
+    tablaServ.appendChild(fila);
   });
 });

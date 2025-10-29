@@ -1,3 +1,4 @@
+// server.js
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -9,14 +10,23 @@ app.use(cors());
 
 const server = http.createServer(app);
 const io = socketIo(server, {
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST']
-    }
+    cors: { origin: '*', methods: ['GET', 'POST'] }
 });
 
+// Datos del proyecto y sus integrantes
+const proyecto = {
+    nombre: 'Monitoreo de Sistemas Node.js',
+    descripcion: 'Aplicación para monitorear recursos del sistema en tiempo real',
+    integrantes: [
+        { nombre: 'José Ariel', rol: 'Desarrollador' },
+        { nombre: 'Ana Pérez', rol: 'Documentación' },
+        { nombre: 'Luis Gómez', rol: 'Pruebas' }
+    ],
+    version: '1.0.0'
+};
+
 function bytesToGB(bytes) {
-    return (bytes / (1024 ** 3)).toFixed(2) + ' GB';
+    return bytes ? (bytes / (1024 ** 3)).toFixed(2) + ' GB' : '0.00 GB';
 }
 
 async function obtenerDatosSistema() {
@@ -30,7 +40,6 @@ async function obtenerDatosSistema() {
             procesos,
             cargaCPU,
             osInfo,
-            cpuSpeed,
             diskIO,
             servicios
         ] = await Promise.all([
@@ -42,7 +51,6 @@ async function obtenerDatosSistema() {
             si.processes(),
             si.currentLoad(),
             si.osInfo(),
-            si.cpuCurrentspeed(),
             si.disksIO(),
             si.services('*')
         ]);
@@ -64,8 +72,8 @@ async function obtenerDatosSistema() {
                 const s = stats[0] || {};
                 return {
                     interfaz: iface.iface,
-                    ip4: iface.ip4,
-                    mac: iface.mac,
+                    ip4: iface.ip4 || 'N/D',
+                    mac: iface.mac || 'N/D',
                     recibidoMB: s.rx_bytes ? (s.rx_bytes / (1024 * 1024)).toFixed(2) : "0.00",
                     enviadoMB: s.tx_bytes ? (s.tx_bytes / (1024 * 1024)).toFixed(2) : "0.00"
                 };
@@ -77,11 +85,11 @@ async function obtenerDatosSistema() {
             .sort((a, b) => b.pcpu - a.pcpu)
             .slice(0, 5)
             .map(p => ({
-                nombre: p.name,
+                nombre: p.name || 'N/D',
                 pid: p.pid,
-                cpu: p.pcpu.toFixed(2) + '%',
-                memoria: p.pmem.toFixed(2) + '%',
-                usuario: p.user
+                cpu: p.pcpu ? p.pcpu.toFixed(2) + '%' : '0%',
+                memoria: p.pmem ? p.pmem.toFixed(2) + '%' : '0%',
+                usuario: p.user || 'N/D'
             }));
 
         // Servicios principales (solo los activos)
@@ -89,28 +97,30 @@ async function obtenerDatosSistema() {
             .filter(s => s.running)
             .slice(0, 10)
             .map(s => ({
-                nombre: s.name,
+                nombre: s.name || 'N/D',
                 estado: s.running ? 'Activo' : 'Detenido',
-                inicio: s.startmode
+                inicio: s.startmode || 'Desconocido'
             }));
 
         return {
+            proyecto,
             timestamp: new Date().toISOString(),
             sistemaOperativo: {
-                plataforma: osInfo.platform,
-                distro: osInfo.distro,
-                release: osInfo.release,
-                kernel: osInfo.kernel,
-                arquitectura: osInfo.arch,
-                hostname: osInfo.hostname,
-                uptime: (osInfo.uptime / 3600).toFixed(2) + ' h'
+                plataforma: osInfo.platform || 'N/D',
+                distro: osInfo.distro || 'N/D',
+                release: osInfo.release || 'N/D',
+                kernel: osInfo.kernel || 'N/D',
+                arquitectura: osInfo.arch || 'N/D',
+                hostname: osInfo.hostname || 'N/D',
+                uptime: osInfo.uptime ? (osInfo.uptime / 3600).toFixed(2) + ' h' : 'N/D'
             },
             cpu: {
                 fabricante: cpu.manufacturer || 'Desconocido',
                 modelo: cpu.brand || 'Desconocido',
-                nucleos: cpu.cores,
-                velocidadActual: cpuSpeed.avg + ' GHz',
-                cargaPromedio: cargaCPU.currentLoad.toFixed(2) + '%',
+                nucleos: cpu.cores || 0,
+                velocidadActual: cpu.speed ? cpu.speed + ' GHz' : 'N/D',
+                velocidadMaxima: cpu.speedmax ? cpu.speedmax + ' GHz' : 'N/D',
+                cargaPromedio: cargaCPU.currentLoad ? cargaCPU.currentLoad.toFixed(2) + '%' : 'N/D',
                 temperatura: cpuTemp.main ? `${cpuTemp.main} °C` : 'N/D'
             },
             memoria: {
@@ -120,8 +130,8 @@ async function obtenerDatosSistema() {
             },
             disco: {
                 trafico: {
-                    lecturaMBs: (diskIO.rIO_sec / 1024 / 1024).toFixed(2),
-                    escrituraMBs: (diskIO.wIO_sec / 1024 / 1024).toFixed(2)
+                    lecturaMBs: diskIO.rIO_sec ? (diskIO.rIO_sec / 1024 / 1024).toFixed(2) : '0.00',
+                    escrituraMBs: diskIO.wIO_sec ? (diskIO.wIO_sec / 1024 / 1024).toFixed(2) : '0.00'
                 },
                 particiones: {
                     sda1: sda1 ? {
@@ -149,7 +159,7 @@ async function obtenerDatosSistema() {
         };
     } catch (error) {
         console.error('Error al obtener datos del sistema:', error);
-        throw error;
+        return { error: 'No se pudieron obtener los datos del sistema' };
     }
 }
 
@@ -160,24 +170,16 @@ app.get('/', (req, res) => {
 
 // API REST
 app.get('/api/sistema', async (req, res) => {
-    try {
-        const datos = await obtenerDatosSistema();
-        res.json(datos);
-    } catch (error) {
-        res.status(500).json({ error: 'Error al obtener datos' });
-    }
+    const datos = await obtenerDatosSistema();
+    res.json(datos);
 });
 
 // WebSocket
 io.on('connection', (socket) => {
     console.log('Cliente conectado');
     const intervalo = setInterval(async () => {
-        try {
-            const datos = await obtenerDatosSistema();
-            socket.emit('datosSistema', datos);
-        } catch (error) {
-            console.error('Error en WebSocket:', error);
-        }
+        const datos = await obtenerDatosSistema();
+        socket.emit('datosSistema', datos);
     }, 5000);
 
     socket.on('disconnect', () => {
@@ -190,3 +192,4 @@ const PORT = 3000;
 server.listen(PORT, '0.0.0.0', () => {
     console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);
 });
+
