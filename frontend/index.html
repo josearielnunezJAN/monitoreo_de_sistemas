@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Monitoreo de Sistemas</title>
+  <title>Monitoreo de Sistemas Online</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="icono.png">  
 
   <!-- Bootstrap 5.3 -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -27,11 +30,11 @@
       <div class="card-body">
         <div class="mb-3">
           <label for="username" class="form-label">Usuario</label>
-          <input type="text" class="form-control" id="username" placeholder="admin" value="admin" autocomplete="username">
+          <input type="text" class="form-control" id="username" placeholder="usuario" autocomplete="username">
         </div>
         <div class="mb-3">
           <label for="password" class="form-label">Contraseña</label>
-          <input type="password" class="form-control" id="password" placeholder="admin" value="admin" autocomplete="current-password">
+          <input type="password" class="form-control" id="password" placeholder="contraseña" autocomplete="current-password">
         </div>
         <div class="mb-3">
           <label for="serverIp" class="form-label">IP del servidor a monitorear</label>
@@ -53,27 +56,70 @@
   <!-- Contenido principal -->
   <div id="mainContent" class="d-none">
     <!-- Navbar sticky -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow sticky-top">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="#"><i class="fas fa-desktop"></i> Monitoreo</a>
-        <button class="btn btn-outline-light btn-sm ms-auto" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            <li class="nav-item"><a class="nav-link active" href="#seccionProyecto">Proyecto</a></li>
-            <li class="nav-item"><a class="nav-link" href="#seccionSO">Servidor</a></li>            
-            <li class="nav-item"><a class="nav-link" href="#seccionCPU">CPU</a></li>
-            <li class="nav-item"><a class="nav-link" href="#seccionMemoria">Memoria</a></li>
-            <li class="nav-item"><a class="nav-link" href="#seccionDisco">Disco</a></li>
-            <li class="nav-item"><a class="nav-link" href="#seccionRed">Red</a></li>
-            <li class="nav-item"><a class="nav-link" href="#seccionProcesos">Procesos</a></li>
-            <li class="nav-item"><a class="nav-link" href="#seccionServicios">Servicios</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow sticky-top">
+  <div class="container-fluid">
+    <!-- Logo + Nombre de la app -->
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <img src="icono.png" alt="Logo" width="30" height="30" class="d-inline-block align-text-top me-2">
+      Monitoreo de Sistemas
+    </a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="#seccionProyecto">
+            <i class="fas fa-project-diagram me-1"></i> Proyecto
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#seccionSO">
+            <i class="fas fa-server me-1"></i> Servidor
+          </a>
+        </li>            
+        <li class="nav-item">
+          <a class="nav-link" href="#seccionCPU">
+            <i class="fas fa-microchip me-1"></i> CPU
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#seccionMemoria">
+            <i class="fas fa-memory me-1"></i> Memoria
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#seccionDisco">
+            <i class="fas fa-hdd me-1"></i> Disco
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#seccionRed">
+            <i class="fas fa-network-wired me-1"></i> Red
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#seccionProcesos">
+            <i class="fas fa-tasks me-1"></i> Procesos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#seccionServicios">
+            <i class="fas fa-cogs me-1"></i> Servicios
+          </a>
+        </li>
+        <li class="nav-item" id="logoutBtn">
+          <a class="nav-link" href="#">
+            <i class="fas fa-sign-out-alt me-1"></i> Salir
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
 
     <div class="container my-5">
       <!-- PROYECTO -->
